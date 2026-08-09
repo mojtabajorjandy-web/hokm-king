@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>حکم آنلاین 1989</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ====== صفحه لابی ====== -->
+  <div id="screen-lobby" class="screen active">
+    <div class="lobby-container">
+      <div class="logo">
+        <span class="logo-icon">🃏</span>
+        <h1>حکم آنلاین <span class="gold-text">1989</span></h1>
+        <p class="subtitle">بازی سنتی ایرانی — آنلاین و رایگان</p>
+      </div>
+
+      <div class="card name-card">
+        <label>نام شما:</label>
+        <input type="text" id="input-name" placeholder="نام خود را وارد کنید" maxlength="20">
+      </div>
+
+      <div class="card menu-card">
+        <button class="btn btn-primary btn-large" id="btn-find-match">🔍 پیدا کردن بازی</button>
+        <button class="btn btn-secondary btn-large" id="btn-create-room">🎮 ساخت اتاق جدید</button>
+        <div class="join-row">
+          <input type="text" id="input-room-code" placeholder="کد اتاق" maxlength="5">
+          <button class="btn btn-secondary" id="btn-join-room">ورود</button>
+        </div>
+        <button class="btn btn-ghost btn-large" id="btn-wheel">🎡 گردونه شانس روزانه</button>
+        <button class="btn btn-ghost btn-large" id="btn-league">🏆 لیگ حرفه‌ای</button>
+        <button class="btn btn-ghost btn-large" id="btn-settings">⚙️ تنظیمات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== صفحه اتاق ====== -->
+  <div id="screen-room" class="screen">
+    <div class="room-container">
+      <div class="room-header">
+        <button class="btn-icon-back" id="btn-leave-room">← خروج</button>
+        <div class="room-code-box">
+          <span class="label">کد اتاق:</span>
+          <span class="room-code" id="room-code-display">——</span>
+          <button class="btn-tiny" id="btn-copy-code">کپی</button>
+        </div>
+      </div>
+      <p class="room-hint">این کد رو به دوستانت بده تا وارد بازی بشن</p>
+
+      <div class="seats-grid" id="seats-grid">
+      </div>
+
+      <div class="room-actions">
+        <button class="btn btn-primary btn-large" id="btn-start-game">شروع بازی</button>
+      </div>
+      <p class="room-status" id="room-status"></p>
+    </div>
+  </div>
+
+  <!-- ====== صفحه بازی ====== -->
+  <div id="screen-game" class="screen">
+    <div class="game-header">
+      <div class="score-board">
+        <div class="team-score team-0-score">
+          <span class="team-label">تیم آبی</span>
+          <span class="score-num" id="score-team-0">0</span>
+        </div>
+        <span class="vs">-</span>
+        <div class="team-score team-1-score">
+          <span class="team-label">تیم قرمز</span>
+          <span class="score-num" id="score-team-1">0</span>
+        </div>
+      </div>
+      <div class="trick-board">
+        <span class="label">تریک‌ها:</span>
+        <span id="tricks-team-0">0</span>
+        <span class="sep">|</span>
+        <span id="tricks-team-1">0</span>
+        <span class="sep">|</span>
+        <span class="label">دست:</span>
+        <span id="trick-number">0</span>
+      </div>
+    </div>
+
+    <div class="trump-display" id="trump-display">
+      <span class="crown">👑</span>
+      <span>حاکم: </span>
+      <span class="hakem-name" id="hakem-name">—</span>
+      <span class="trump-suit" id="trump-suit-display"></span>
+    </div>
+
+    <div class="table-area" id="table-area">
+      <div class="player player-top" id="player-top">
+        <div class="player-hand" id="hand-top"></div>
+        <div class="player-info" id="info-top"></div>
+      </div>
+      <div class="player player-left" id="player-left">
+        <div class="player-hand" id="hand-left"></div>
+        <div class="player-info" id="info-left"></div>
+      </div>
+      <div class="trick-center" id="trick-center">
+        <div class="played-card played-top" id="played-0"></div>
+        <div class="played-card played-right" id="played-1"></div>
+        <div class="played-card played-bottom" id="played-2"></div>
+        <div class="played-card played-left" id="played-3"></div>
+      </div>
+      <div class="player player-right" id="player-right">
+        <div class="player-info" id="info-right"></div>
+        <div class="player-hand" id="hand-right"></div>
+      </div>
+      <div class="player player-bottom" id="player-bottom">
+        <div class="player-info" id="info-bottom"></div>
+      </div>
+    </div>
+
+    <div class="my-area">
+      <div class="my-hand" id="my-hand"></div>
+    </div>
+
+    <button class="chat-toggle" id="chat-toggle">💬 چت</button>
+
+    <div class="modal hidden" id="choose-trump-panel">
+      <div class="modal-content">
+        <h3>👑 انتخاب خال حاکم</h3>
+        <p>شما حاکم هستید! خال ترامپ رو انتخاب کنید:</p>
+        <div class="trump-choices">
+          <div class="trump-choice" data-suit="spades">
+            <span class="suit-spade">♠</span>
+            <span class="suit-label">پیک</span>
+          </div>
+          <div class="trump-choice" data-suit="hearts">
+            <span class="suit-heart">♥</span>
+            <span class="suit-label">دل</span>
+          </div>
+          <div class="trump-choice" data-suit="diamonds">
+            <span class="suit-diamond">♦</span>
+            <span class="suit-label">خشت</span>
+          </div>
+          <div class="trump-choice" data-suit="clubs">
+            <span class="suit-club">♣</span>
+            <span class="suit-label">گشنیز</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="round-end-panel">
+      <div class="modal-content">
+        <h3 id="round-end-title">راند تمام شد</h3>
+        <p id="round-end-text"></p>
+        <button class="btn btn-primary btn-large" id="btn-next-round">راند بعدی</button>
+      </div>
+    </div>
+
+    <div class="modal hidden" id="game-end-panel">
+      <div class="modal-content">
+        <h3 id="game-end-title">🎉 بازی تمام شد!</h3>
+        <p id="game-end-text"></p>
+        <button class="btn btn-primary btn-large" id="btn-new-game">بازی جدید</button>
+        <button class="btn btn-ghost btn-large" id="btn-back-lobby">بازگشت به لابی</button>
+      </div>
+    </div>
+
+    <div class="chat-panel hidden" id="chat-panel">
+      <div class="chat-header">
+        <h3>💬 چت بازی</h3>
+        <button class="btn-icon-close" id="btn-close-chat">✕</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="پیام بنویسید..." maxlength="100">
+        <button class="btn btn-primary" id="btn-send-chat">ارسال</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== صفحه گردونه شانس ====== -->
+  <div id="screen-wheel" class="screen">
+    <div class="wheel-container">
+      <div class="wheel-header">
+        <button class="btn-icon-back" id="btn-wheel-back">← بازگشت</button>
+        <h1>🎡 گردونه شانس روزانه</h1>
+      </div>
+      <div class="card">
+        <p class="wheel-info">هر ۲۴ ساعت یک بار می‌توانید بچرخانید!</p>
+        <div class="wheel-wrapper">
+          <div class="wheel" id="wheel">
+            <div class="wheel-item">🪙 ۵۰</div>
+            <div class="wheel-item">🪙 ۱۰۰</div>
+            <div class="wheel-item">🪙 ۲۰۰</div>
+            <div class="wheel-item">⭐ اشتراک</div>
+            <div class="wheel-item">🪙 ۵۰۰</div>
+            <div class="wheel-item">😢 هیچی</div>
+            <div class="wheel-item">🪙 ۱۵۰</div>
+            <div class="wheel-item">👑 اشتراک</div>
+          </div>
+          <div class="wheel-pointer">▼</div>
+        </div>
+        <button class="btn btn-primary btn-large" id="btn-spin-wheel">چرخاندن!</button>
+        <div class="wheel-result hidden" id="wheel-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== صفحه لیگ ====== -->
+  <div id="screen-league" class="screen">
+    <div class="league-container">
+      <div class="league-header">
+        <button class="btn-icon-back" id="btn-league-back">← بازگشت</button>
+        <h1>🏆 لیگ حرفه‌ای</h1>
+      </div>
+      <div id="league-locked">
+        <div class="league-locked">
+          <div class="lock-icon">🔒</div>
+          <h2>لیگ قفل است</h2>
+          <p>برای ورود به لیگ حرفه‌ای باید اشتراک بخرید</p>
+          <div class="plans">
+            <div class="plan">
+              <h3>برنزی</h3>
+              <div class="plan-price">۹٬۹۰۰ ت</div>
+              <ul>
+                <li>✓ ۳۰ روز اشتراک</li>
+                <li>✓ ورود به لیگ</li>
+                <li>✓ بدون تبلیغ</li>
+              </ul>
+              <button class="btn btn-secondary btn-large" data-plan="bronze">خرید</button>
+            </div>
+            <div class="plan plan-popular">
+              <span class="badge">محبوب</span>
+              <h3>طلایی</h3>
+              <div class="plan-price">۲۹٬۹۰۰ ت</div>
+              <ul>
+                <li>✓ ۹۰ روز اشتراک</li>
+                <li>✓ ورود به لیگ</li>
+                <li>✓ بدون تبلیغ</li>
+                <li>✓ ۵۰۰ سکه رایگان</li>
+              </ul>
+              <button class="btn btn-primary btn-large" data-plan="gold">خرید</button>
+            </div>
+          </div>
+          <p class="note">💡 می‌توانید برای دوستانتان هم اشتراک بخرید!</p>
+          <div class="gift-section">
+            <h3>🎁 هدیه اشتراک برای دوست</h3>
+            <input type="text" id="gift-recipient" placeholder="نام دوست شما" maxlength="20">
+            <select id="gift-plan">
+              <option value="bronze">برنزی - ۹٬۹۰۰ ت</option>
+              <option value="gold">طلایی - ۲۹٬۹۰۰ ت</option>
+            </select>
+            <button class="btn btn-secondary btn-large" id="btn-gift-sub">ارسال هدیه</button>
+          </div>
+          <p class="note">⚠️ خرید اشتراک کاملاً شبیه‌سازی شده است و واقعی نیست</p>
+        </div>
+      </div>
+      <div id="league-unlocked" class="hidden">
+        <div class="league-unlocked">
+          <div class="league-welcome">
+            <div class="crown">👑</div>
+            <div class="rank" id="league-rank">رتبه: —</div>
+          </div>
+          <h3>جدول رده‌بندی</h3>
+          <div class="leaderboard" id="leaderboard"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== صفحه تنظیمات ====== -->
+  <div id="screen-settings" class="screen">
+    <div class="settings-container">
+      <div class="settings-header">
+        <button class="btn-icon-back" id="btn-settings-back">← بازگشت</button>
+        <h1>⚙️ تنظیمات</h1>
+      </div>
+      <div class="settings-content">
+        <div class="card">
+          <h3>نام بازیکن</h3>
+          <input type="text" id="settings-name" placeholder="نام شما" maxlength="20">
+        </div>
+        <div class="card">
+          <h3>صدا</h3>
+          <label class="toggle">
+            <input type="checkbox" id="settings-sound">
+            <span class="toggle-slider"></span>
+            <span>فعال</span>
+          </label>
+        </div>
+        <div class="card">
+          <h3>سرعت بازی ربات</h3>
+          <div class="speed-options" id="speed-options">
+            <button class="speed-btn" data-speed="slow">آهسته</button>
+            <button class="speed-btn active" data-speed="normal">عادی</button>
+            <button class="speed-btn" data-speed="fast">سریع</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>رنگ میز</h3>
+          <div class="theme-options" id="theme-options">
+            <button class="theme-btn active" data-theme="gold">طلایی</button>
+            <button class="theme-btn" data-theme="dark">تاریک</button>
+            <button class="theme-btn" data-theme="green">سبز</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
